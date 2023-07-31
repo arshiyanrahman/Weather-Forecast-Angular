@@ -1,0 +1,55 @@
+.searchcity{
+    display: flex;
+    justify-content: center;
+}
+.searchcity input[type="text"]{
+    border-radius: 20px; /* Adjust the value to control the amount of curvature */
+    padding: 10px 15px;
+    width: 175px; /* Set the desired width */
+    font-size: 16px;
+    border-color: #007FFF; /* Adding !important to ensure it takes precedence */
+    background-color: #4B9CD3;
+    color: white;
+    margin-bottom: 50;
+  }
+
+  hr{
+    color: #89CFF0;
+   display: flex;
+   margin: auto;
+    width: 75%;
+  }
+
+  .main{
+ background-color: #4B9CD3;
+  }
+
+  .weatherheading{
+    color: white;
+   
+  }
+
+  .card{
+    border-color: #007FFF;
+    border-width: 2.5px; 
+    border-radius: 35px; 
+    background-color: #89CFF0;
+  }
+
+  .NotFound{
+    font-weight: bold; 
+    font-size: 50px;
+  }
+  
+  .humidity,.temp, .weatherstring, .minTemp, .maxTemp, .windspeed, .weatherForecastDate {
+    color :white;
+  }
+
+  .weathermain{
+    font-weight: bold; 
+    color: white;
+  }
+
+  .forecastData{
+    font-size: 1rem;
+  }

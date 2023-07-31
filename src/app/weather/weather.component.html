@@ -1,0 +1,70 @@
+<div class="main">
+  <div class="heading">
+
+    <h1 class="text-center mb-3 weatherheading">Weather Forecast</h1>
+  </div>
+  <div class="searchcity">
+    <input type="text" class="text-center form-control text-white search" (keyup.enter)="onEnterPressed(city)"
+      [(ngModel)]="city" placeholder="City Name :">
+  </div>
+  <h5 class="text-white text-center mt-2 mb-3">City : {{ city | uppercase }}</h5>
+  <div *ngIf="error ==true">
+  
+    <img src="/assets/404IMG2.png" class="d-flex m-auto mt-2" width="800px"> <br>
+    <p class="text-center text-danger NotFound">City Not Found!!!<br>Please Enter A
+      Valid City...</p>
+  </div>
+  <div *ngIf="error==false">
+    <hr>
+    <div *ngIf="weatherForecast.length > 0">
+
+      <div class="container py-5 h-100">
+
+        <div class="row row-cols-1 row-cols-md-3">
+          <div class="col mb-4" *ngFor="let item of weatherForecast">
+
+            <div class="card h-100">
+              <div class="card-body p-4">
+
+                <div class="d-flex">
+                  <h6 class="flex-grow-1 weatherForecastDate">{{item.date}}</h6>
+                  <h6></h6>
+                </div>
+
+                <div class="d-flex flex-column text-center mt-5 mb-4">
+                  <h6 class="display-4 mb-0 font-weight-bold temp">{{item.temperature}}°C</h6>
+                  <span class="small weathermain">{{item.main}}</span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="flex-grow-1 forecastData">
+                    <div><span class="ms-1 maxTemp"><img src="/assets/cold.png" width="18px">
+                        {{item.temp_max}}°C</span></div>
+                    <div> <span class="ms-1 minTemp"><img src="/assets/thermometer.png" 
+                          width="18px"> {{item.temp_min}}°C</span></div>
+                    <div> <span class="ms-1 windspeed"><img src="/assets/windspeed.png" 
+                          width="18px"> {{item.windSpeed}} Km/h</span></div>
+                    <div><span class="ms-1 humidity"><img src="/assets/humidity (1).png" 
+                          width="18px"> {{item.humidity}}%</span></div>
+                  </div>
+                  <div>
+                    <img *ngIf="item.main == 'Rain'" width="100px" src="/assets/storm.png" width="100px">
+                    <img *ngIf="item.main == 'Clouds' && item.temperature<=0" src="/assets/snowfall.png" width="100px">
+                    <img *ngIf="item.main == 'Clouds'  && item.temperature>0" src="/assets/cloud.png" width="100px">
+                    <img *ngIf="item.main == 'Clear' && item.temperature<=0 " width="100px"
+                      src="/assets/snowfall (4).png" width="100px">
+                    <img *ngIf="item.main == 'Clear' && item.temperature>0" width="100px" src="/assets/sun.png"
+                      width="100px">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
