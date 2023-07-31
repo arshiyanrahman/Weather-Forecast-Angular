@@ -18,7 +18,7 @@ export class WeatherService {
    * @param city 
    */
   getWeatherForecast(city: string): Observable<Weatherdata[]> {
-    const apiUrl = `${environment.apiURL1}` + `${city}` + `${environment.apiURL2}` + `${environment.apiKey}`;
+    const apiUrl = `${environment.apiURL1}` + `${city}` + `${environment.apiURL2}`;
     return this.http.get<Weatherdetails>(apiUrl).pipe(
       map(response => this.extractWeatherData(response))
     );
@@ -32,77 +32,68 @@ export class WeatherService {
    * @returns weatherData
    */
   private extractWeatherData(response: Weatherdetails): Weatherdata[] {
-    
-    // weatherData to store data to be displayed in template file 
+    // to store forecast data to be displayed on the front end
     const weatherData: Weatherdata[] = [];
 
-    // an exmpty object which takes date as the string key 
-    // and has array of temperature, humidities, windpspeed as it's nested objects 
-    const dailyData: { [date: string]: { temperatures: number[]; humidities: number[]; windSpeeds: number[] } } = {};
+    // to store added dates
+    const addedDates: string[] = [];
 
-    // iterating over the list in response
+    //loop to traverse through the response list
     for (const item of response.list) {
 
-      // picking date in Unix date format and converting it to string date
+      // converting date to string
       const date = new Date(item.dt * 1000).toLocaleDateString();
+      
+      //checking if date is a part od addedDates[]
+      if (!addedDates.includes(date)) {
+        // if not then adding the date 
+        addedDates.push(date);
+  
+        // Initialize minTemp and maxTemp with current temperature
+        let minTemp = item.main.temp;
+        let maxTemp = item.main.temp;
+  
+        // traversing through response's list
+        for (const tempData of response.list) {
 
-      // checking if dailyData object has an entry by a date
-      if (!dailyData[date]) {
-        // if no then add the first entry
-        dailyData[date] = {
-          temperatures: [item.main.temp],
-          humidities: [item.main.humidity],
-          windSpeeds: [item.wind.speed],
-        };
-      } 
-      // if yes, then append the next entry to it
-      else {
-        dailyData[date].temperatures.push(item.main.temp);
-        dailyData[date].humidities.push(item.main.humidity);
-        dailyData[date].windSpeeds.push(item.wind.speed);
-      }
-    }
+          // converting date from Unix stamp to string
+          const tempDate = new Date(tempData.dt * 1000).toLocaleDateString();
 
-    // loop to iterate over dailyData for each date 
-    for (const date in dailyData) {
-      if (dailyData.hasOwnProperty(date)) {
-        // retrieving weather data for particular date and assigning it to dailyWeather
-        const dailyWeather = dailyData[date];
-
-        // calculating average temp
-        const averageTemperature = dailyWeather.temperatures.reduce((sum, temp) => sum + temp, 0) / dailyWeather.temperatures.length;
+          // matching if the date found is the same date as in addedDates[]
+          if (tempDate === date) {
+            // Update minTemp and maxTemp if a lower or higher temperature is found for the current date
+            const temp = tempData.main.temp;
+            if (temp < minTemp) {
+              minTemp = temp;
+            }
+            if (temp > maxTemp) {
+              maxTemp = temp;
+            }
+          }
+        }
         
-        // calculating average humidity
-        const averageHumidity = dailyWeather.humidities.reduce((sum, humidity) => sum + humidity, 0) / dailyWeather.humidities.length;
-        
-        // calculating average windspeed
-        const averageWindSpeed = dailyWeather.windSpeeds.reduce((sum, windSpeed) => sum + windSpeed, 0) / dailyWeather.windSpeeds.length;
-
-        // finding minimum of all the temperatures
-        const minTemperature = Math.min(...dailyWeather.temperatures);
-        
-        // finding maxmimum of all the temperatures
-        const maxTemperature = Math.max(...dailyWeather.temperatures);
-
-        // creating a new variable of type Weatherdata and assigningvalues to it 
+        //declaring a variable weatherItem of type WeatherData and assigning values
         const weatherItem: Weatherdata = {
           date: date,
-          temperature: Number(averageTemperature.toFixed(1)),
-          temp_min: minTemperature,
-          temp_max: maxTemperature,
-          humidity: Number(averageHumidity.toFixed(1)),
-          windSpeed: Number(averageWindSpeed.toFixed(1)),
-          main: response.list.find((item) => new Date(item.dt * 1000).toLocaleDateString() === date)?.weather[0].main || '',
+          temperature: item.main.temp,
+          temp_min: minTemp,
+          temp_max: maxTemp,
+          humidity: item.main.humidity,
+          windSpeed: item.wind.speed,
+          main: item.weather[0].main
         };
-
-        // adding forecast for that day to weatherData 
-        // and proceeding to next day
+        
+        // adding that days weather to weatherData
         weatherData.push(weatherItem);
+  
+        if (weatherData.length === 6) {
+          break; // exiting if six days data is added
+        }
       }
     }
-
-    // returning weather forecast
+  // returning weather forecast data 
     return weatherData;
   }
+  
 }
 
